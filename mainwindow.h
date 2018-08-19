@@ -25,6 +25,7 @@ public:
 
 private slots:
     void realTimeDataSlot();
+    void stop(bool checked);
 
 private:
     Ui::MainWindow *ui;

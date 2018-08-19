@@ -38,4 +38,7 @@ FORMS += \
 RESOURCES += \
     images.qrc
 
+#win32:RESOURCES += images_win.qrc
+#linux:RESOURCES += images_lin.qrc
+
 

@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     initializeTopBottomWidgets();
     makePlots();
+
+    connect(ui->stopButton, &QPushButton::toggled, this, &MainWindow::stop);
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +70,7 @@ void MainWindow::makePlots()
     }
     // setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
     connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realTimeDataSlot()));
-    dataTimer.start(0); // Interval 0 means to refresh as fast as possible
+    dataTimer.start(8); // Interval 0 means to refresh as fast as possible
 }
 
 void MainWindow::initializeTopBottomWidgets()
@@ -85,19 +87,19 @@ void MainWindow::initializeTopBottomWidgets()
 
 void MainWindow::realTimeDataSlot()
 {
+    static double key;
+    key += 0.01;
+
     static QTime time(QTime::currentTime());
     // calculate two new data points:
-    double key = (time.elapsed()/1000.0); // time elapsed since start of demo, in seconds
-    static double lastPointKey = 0;
-    if (key - lastPointKey > 0.008) // at most add point every 8 ms
-    {
-      // add data to lines:
-        for(const auto& mainGraph : mainGraphCos)
-        {
-            mainGraph->addData(key, qSin(key/0.4364));
-        }
+    double timeInSec = (time.elapsed()/1000.0); // time elapsed since start of demo, in seconds
 
-      lastPointKey = key;
+    qDebug() << "realTimeDataSlot() " << key;
+
+    // add data to lines:
+    for(const auto& mainGraph : mainGraphCos)
+    {
+        mainGraph->addData(key, qSin(key/0.4364));
     }
 
     // make key axis range scroll with the data (at a constant range size of 8):
@@ -112,15 +114,26 @@ void MainWindow::realTimeDataSlot()
     static double lastFpsKey;
     static int frameCount;
     ++frameCount;
-    if (key - lastFpsKey > 1) // average fps over 1 seconds
+    if (timeInSec - lastFpsKey > 1) // average fps over 1 seconds
     {
       ui->statusBar->showMessage(
             QString("%1 FPS, Total Data points: %2")
-            .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
+            .arg(frameCount/(timeInSec - lastFpsKey), 0, 'f', 0)
             .arg(mainGraphCos.at(0)->data()->size())
             , 0);
       qDebug() << "size() " << mainGraphCos.at(0)->data()->size();
-      lastFpsKey = key;
+      lastFpsKey = timeInSec;
       frameCount = 0;
     }
+}
+
+void MainWindow::stop(bool checked)
+{
+    if(checked)
+    {
+        dataTimer.stop();
+        return;
+    }
+
+    dataTimer.start(8);
 }
