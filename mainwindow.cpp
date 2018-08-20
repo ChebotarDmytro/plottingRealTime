@@ -102,6 +102,12 @@ void MainWindow::realTimeDataSlot()
         mainGraph->addData(key, qSin(key/0.4364));
     }
 
+    // remove the old data points from a graph to prevent memory overflow
+    for(int i = 0; i < ui->customPlot->graphCount(); i++)
+    {
+        ui->customPlot->graph(i)->data()->removeBefore(key - 8);
+    }
+
     // make key axis range scroll with the data (at a constant range size of 8):
     for(const auto& mainGraph : mainGraphCos)
     {
