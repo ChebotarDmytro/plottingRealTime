@@ -35,10 +35,7 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-RESOURCES += \
-    images.qrc
-
-#win32:RESOURCES += images_win.qrc
-#linux:RESOURCES += images_lin.qrc
+win32:RESOURCES += images_win.qrc
+linux:RESOURCES += images_lin.qrc
 
 

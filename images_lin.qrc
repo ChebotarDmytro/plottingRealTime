@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>images/battery.png</file>
+    <file>images/heart.png</file>
+    <file>images/bottom.png</file>
+    <file>images/top.png</file>
+</qresource>
+</RCC>
